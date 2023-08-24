@@ -15,6 +15,7 @@ public class CheckDisplayProductTest extends BaseTests {
     @Tag("@2")
     @DisplayName("Валидация отображения товаров в списке")
     public void checkDisplayProductTest() {
+        //---- основные элементы страницы
         List<WebElement> number;
         List<WebElement> productList;
         List<WebElement> typeList;
@@ -30,6 +31,7 @@ public class CheckDisplayProductTest extends BaseTests {
         typeList = driver.findElements(By.xpath("//td[2]"));
         exotictList = driver.findElements(By.xpath("//td[3]"));
 
+        //---- проверки на отображение элементов
         for (int i = 0; i < number.size(); i++) {
             Assertions.assertTrue(number.get(i).getText().matches("[0-9]+"));
             Assertions.assertTrue(productList.get(i).getText().matches("[а-яА-Яa-zA-Z]+"));
@@ -37,8 +39,8 @@ public class CheckDisplayProductTest extends BaseTests {
             Assertions.assertTrue(exotictList.get(i).getText().matches("true|false"));
         }
 
+        //---- проверка отображения кнопки
         WebElement button = driver.findElement(By.xpath("//button[@data-target='#editModal']"));
         Assertions.assertTrue(button.isDisplayed());
-
     }
 }
