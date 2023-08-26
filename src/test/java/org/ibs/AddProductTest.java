@@ -36,8 +36,7 @@ public class AddProductTest extends BaseTests {
         WebElement vegetable = driver.findElement(By.xpath("//option[@value='VEGETABLE']"));
 
         button.click();
-
-        waitting(2);
+        waitting(titleModuleAddProduct);
 
         Assertions.assertAll(
                 ()->Assertions.assertEquals("Добавление товара", titleModuleAddProduct.getText(), "не найдено:добавление товара"),
@@ -47,25 +46,38 @@ public class AddProductTest extends BaseTests {
                 ()->Assertions.assertTrue(buttonSave.isDisplayed())
         );
 
-
         input.sendKeys("Перец");
+        Assertions.assertEquals("Перец", input.getAttribute("value"), "Элемент не соотвествует введенному значению");
 
         type.click();
         vegetable.click();
+        Assertions.assertEquals("VEGETABLE", type.getAttribute("value"), "Элемент не соотвествует введенному значению");
+
+        WebElement checkBox = driver.findElement(By.xpath("//input[@id='exotic']"));
+        Assertions.assertFalse(Boolean.parseBoolean(checkBox.getAttribute("checked")), "Элемент не соотвествует введенному значению");
+
         buttonSave.click();
 
         productList = driver.findElements(By.xpath("//td[1]"));
         typeList = driver.findElements(By.xpath("//td[2]"));
         exotictList = driver.findElements(By.xpath("//td[3]"));
 
-        waitting(5);
 
-        int length = productList.size() - 1;
+        WebElement modal = driver.findElement(By.xpath("//div[@id='editModal']"));
+        System.out.println(modal.getAttribute("style"));
 
-        Assertions.assertAll(
-                ()->Assertions.assertEquals("Перец", productList.get(length).getText(), "не найден:перец"),
-                ()->Assertions.assertEquals("Овощ", typeList.get(length).getText(), "не найден:овощ"),
-                ()->Assertions.assertEquals("false", exotictList.get(length).getText(), "не найден:false")
-        );
+        for (int i = 0; i < 3; i++) {
+            if (modal.getAttribute("style").contains("none")) {
+                int length = productList.size() - 1;
+
+                Assertions.assertAll(
+                        ()->Assertions.assertEquals("Перец", productList.get(length).getText(), "не найден:перец"),
+                        ()->Assertions.assertEquals("Овощ", typeList.get(length).getText(), "не найден:овощ"),
+                        ()->Assertions.assertEquals("false", exotictList.get(length).getText(), "не найден:false")
+                );
+            } else {
+                waittingThread(1);
+            }
+        }
     }
 }
