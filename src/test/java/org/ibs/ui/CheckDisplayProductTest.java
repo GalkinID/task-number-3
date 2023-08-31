@@ -1,6 +1,6 @@
-package org.ibs;
+package org.ibs.ui;
 
-import org.ibs.base.BaseTests;
+import org.ibs.ui.base.BaseTests;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Tag;

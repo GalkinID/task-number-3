@@ -1,4 +1,4 @@
-package org.ibs.base;
+package org.ibs.ui.base;
 
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
