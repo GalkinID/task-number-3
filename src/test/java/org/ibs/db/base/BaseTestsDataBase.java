@@ -8,10 +8,7 @@ import org.junit.jupiter.api.BeforeAll;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
@@ -135,5 +132,36 @@ public class BaseTestsDataBase {
         }
     }
 
+
+    //реализация через  preparedStatement
+
+    /** Добавить запись в базу данных с помощью запроса
+     *
+     * @param sqlQuery sql запрос
+     */
+    protected void sendInsertQueryWithPrepareStat(String sqlQuery, int id, String name, String type, String exotic) {
+        try (PreparedStatement preparedStatement = connect.prepareStatement(sqlQuery)) {
+            preparedStatement.setInt(1, id);
+            preparedStatement.setString(2, name);
+            preparedStatement.setString(3, type);
+            preparedStatement.setString(4, exotic);
+            preparedStatement.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**  Удалить добавленную запись в базе данных
+     *
+     * @param sqlQuery sql запрос
+     */
+    protected void deleteQueryProductWithPrepareStat(String sqlQuery, String name) {
+        try (PreparedStatement preparedStatement = connect.prepareStatement(sqlQuery)) {
+            preparedStatement.setString(1,name);
+            preparedStatement.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
 
 }

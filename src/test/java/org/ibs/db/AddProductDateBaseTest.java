@@ -13,9 +13,9 @@ public class AddProductDateBaseTest extends BaseTestsDataBase {
     @DisplayName("Добавление нового товара через базу данных")
     public void addProductDataBase() {
         sendQueryAndCheck(SELECT);
-        sendInsertQuery(INSERT);
+        sendInsertQueryWithPrepareStat(INSERT, 5, "Перец", "VEGETABLE", "0");
         sendQueryAndCheckProduct(SELECT, "Перец", "VEGETABLE", "0");
-        eleteQueryProduct(DELETE);
+        deleteQueryProductWithPrepareStat(DELETE, "Перец");
         sendQueryAndCheck(SELECT);
     }
 }
