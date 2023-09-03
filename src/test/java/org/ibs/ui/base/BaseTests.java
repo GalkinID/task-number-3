@@ -60,30 +60,30 @@ public class BaseTests {
         }
     }
 
-    @Step("проверка отображения кнопки {element}")
+    @Step("проверка отображения кнопки")
     protected void checkElementIsDisplayed(WebElement element) {
         Assertions.assertTrue(element.isDisplayed(), "Элемент не найден");
     }
 
-    @Step("проверка отображения кнопки {element} и нажатие")
+    @Step("проверка отображения кнопки и нажатие")
     protected void checkIsActiveAndClick(WebElement element) {
         Assertions.assertTrue(element.isDisplayed());
         element.click();
     }
 
-    @Step("Проверка заголовка {expectedText} ")
+    @Step("Проверка заголовка")
     protected void checkTitleModalWindow(WebElement element, String expectedText) {
         Assertions.assertEquals(expectedText , element.getText(), String.format("Элемент %s не найден", expectedText));
     }
 
-    @Step("Ввод в поле {element} - '{expectedText}'")
+    @Step("Ввод в поле")
     protected void fillFeid(WebElement element, String expectedText) {
         element.sendKeys(expectedText);
         Assertions.assertEquals(expectedText, element.getAttribute("value"), "Элемент не соотвествует введенному значению");
     }
 
 
-    @Step("Выбор типа '{expectedText}' из выпадающего списка")
+    @Step("Выбор типа из выпадающего списка")
     protected void choiceType(WebElement dropDown, WebElement option, String expectedText) {
         dropDown.click();
         option.click();
@@ -91,7 +91,7 @@ public class BaseTests {
                 "Элемент не соотвествует введенному значению");
     }
 
-    @Step("Установка значения чекбокса - {exotic}")
+    @Step("Установка значения чекбокса")
     protected void choiceCheckbox(WebElement element, String exotic) {
         if(exotic.equals("true")) {
             element.click();
@@ -103,7 +103,7 @@ public class BaseTests {
         }
     }
 
-    @Step("Проверка добавленого поля - {expectedText} в таблицу")
+    @Step("Проверка добавленого поля - в таблицу")
     protected void checkProductInTable(List<WebElement> elements, String expectedText) {
         for(WebElement element : elements) {
             if(!(element.getText().equals(expectedText))) {
@@ -115,7 +115,7 @@ public class BaseTests {
         Assertions.fail("Элемент не найден");
     }
 
-    @Step("ожидание пока элемент - {element} не будет виден")
+    @Step("ожидание пока элемент - не будет виден")
     protected static WebElement waitting(WebElement element) {
         return wait.until(ExpectedConditions.visibilityOf(element));
     }
