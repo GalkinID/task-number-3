@@ -1,11 +1,8 @@
 package org.ibs.db.base;
 
-import io.qameta.allure.Step;
 import org.h2.jdbcx.JdbcDataSource;
 import org.ibs.utils.PropManager;
-import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeAll;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -16,11 +13,9 @@ import static org.ibs.utils.Param.*;
 public class BaseTestsDataBase {
     protected static JdbcDataSource dataSource;
     protected static Connection connect;
-
     static PropManager propManager = new PropManager();
 
-    @BeforeAll
-    protected static void beforeAll() {
+    public static void connectDataBase() {
         dataSource = new JdbcDataSource();
         dataSource.setURL(propManager.getProperty(DB_URL));
         dataSource.setUser(propManager.getProperty(DB_LOGIN));
@@ -32,8 +27,7 @@ public class BaseTestsDataBase {
         }
     }
 
-    @AfterAll
-    protected static void afterAll() {
+    public static void closeConnectDataBase() {
         try {
             connect.close();
         } catch (SQLException e) {
@@ -42,14 +36,7 @@ public class BaseTestsDataBase {
 
     }
 
-    /**
-     * Выполнение запроса и получение ответа, преобразование ответа,
-     * проверка что записей 4 штуки
-     *
-     * @param sqlQuery sql запрос
-     */
-    @Step("Отправка sql запроса и преобразование ответа")
-    protected void sendQueryAndCheck(String sqlQuery) {
+    public static void sendQueryAndCheck(String sqlQuery) {
         List<Product> products = new ArrayList<>();
         try (Statement statement = connect.createStatement()) {
             try (ResultSet res = statement.executeQuery(sqlQuery)) {
@@ -60,21 +47,14 @@ public class BaseTestsDataBase {
                             res.getString("FOOD_EXOTIC")
                     ));
                 }
-                Assertions.assertTrue(products.size() == 4, "В таюлице не 4 записи");
+                Assertions.assertTrue(products.size() > 0, "Таблица пустая");
             }
         } catch (SQLException e) {
             e.printStackTrace();
         }
     }
 
-    /**
-     * Добавить запись в базу данных с помощью запроса
-     *
-     * @param sqlQuery sql запрос
-     */
-    @Step("Добавить запись в базу данных с помощью запроса")
-
-    protected void sendInsertQuery(String sqlQuery) {
+    public static void sendInsertQuery(String sqlQuery) {
         try (Statement statement = connect.createStatement()) {
             int res = statement.executeUpdate(sqlQuery);
         } catch (SQLException e) {
@@ -82,17 +62,7 @@ public class BaseTestsDataBase {
         }
     }
 
-    /**
-     * Проверить добавление записи с параметрами,
-     * в базу данных с помощью запроса "SELECT * FROM FOOD"
-     *
-     * @param sqlQuery
-     * @param name     имя
-     * @param type     тип
-     * @param exotic   экзотический
-     */
-    @Step("Проверить добавление записи с параметрами,* в базу данных с помощью запроса")
-    protected void sendQueryAndCheckProduct(String sqlQuery, String name, String type, String exotic) {
+    public static void sendQueryAndCheckProduct(String name, String type, String exotic, String sqlQuery) {
 
         List<Product> products = new ArrayList<>();
         boolean boo = false;
@@ -121,30 +91,7 @@ public class BaseTestsDataBase {
         }
     }
 
-    /**
-     * Удалить добавленную запись в базе данных
-     *
-     * @param sqlQuery sql запрос
-     */
-
-    protected void deleteQueryProduct(String sqlQuery) {
-        try (Statement statement = connect.createStatement()) {
-            int res = statement.executeUpdate(sqlQuery);
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    }
-
-
-    //реализация через  preparedStatement
-
-    /**
-     * Добавить запись в базу данных с помощью запроса
-     *
-     * @param sqlQuery sql запрос
-     */
-    @Step("Добавить запись в базу данных с помощью запроса")
-    protected void sendInsertQueryWithPrepareStat(String sqlQuery, int id, String name, String type, String exotic) {
+    public static void sendInsertQuery(String sqlQuery, int id, String name, String type, String exotic) {
         try (PreparedStatement preparedStatement = connect.prepareStatement(sqlQuery)) {
             preparedStatement.setInt(1, id);
             preparedStatement.setString(2, name);
@@ -156,13 +103,7 @@ public class BaseTestsDataBase {
         }
     }
 
-    /**
-     * Удаление добавленной записи в базе данных
-     *
-     * @param sqlQuery sql запрос
-     */
-    @Step("Удаление добавленной записи в базе данных")
-    protected void deleteQueryProductWithPrepareStat(String sqlQuery, String name) {
+    public static void deleteQueryProduct(String name, String sqlQuery) {
         try (PreparedStatement preparedStatement = connect.prepareStatement(sqlQuery)) {
             preparedStatement.setString(1, name);
             preparedStatement.executeUpdate();

@@ -19,10 +19,13 @@
         <selenium-java.version>4.11.0</selenium-java.version>
         <junit-jupiter.version>5.9.2</junit-jupiter.version>
         <h2.version>2.2.220</h2.version>
-        <allure-junit5.version>2.13.5</allure-junit5.version>
         <aspectjweaver.version>1.9.20</aspectjweaver.version>
         <maven-surefire-plugin.version>3.0.0</maven-surefire-plugin.version>
         <allure-maven.version>2.12.0</allure-maven.version>
+        <junit-platform-suite.version>1.9.3</junit-platform-suite.version>
+        <cucumber-java.version>7.13.0</cucumber-java.version>
+        <cucumber-junit-platform-engine.version>7.13.0</cucumber-junit-platform-engine.version>
+        <allure-cucumber7-jvm.version>2.24.0</allure-cucumber7-jvm.version>
 
     </properties>
 
@@ -42,12 +45,32 @@
             <scope>test</scope>
         </dependency>
 
-        <!-- https://mvnrepository.com/artifact/io.qameta.allure/allure-junit5 -->
+        <!-- https://mvnrepository.com/artifact/org.junit.platform/junit-platform-suite -->
+        <dependency>
+            <groupId>org.junit.platform</groupId>
+            <artifactId>junit-platform-suite</artifactId>
+            <version>${junit-platform-suite.version}</version>
+        </dependency>
+
+        <!-- https://mvnrepository.com/artifact/io.cucumber/cucumber-java -->
+        <dependency>
+            <groupId>io.cucumber</groupId>
+            <artifactId>cucumber-java</artifactId>
+            <version>${cucumber-java.version}</version>
+        </dependency>
+
+        <!-- https://mvnrepository.com/artifact/io.cucumber/cucumber-junit-platform-engine -->
+        <dependency>
+            <groupId>io.cucumber</groupId>
+            <artifactId>cucumber-junit-platform-engine</artifactId>
+            <version>${cucumber-junit-platform-engine.version}</version>
+        </dependency>
+
+        <!-- https://mvnrepository.com/artifact/io.qameta.allure/allure-cucumber7-jvm -->
         <dependency>
             <groupId>io.qameta.allure</groupId>
-            <artifactId>allure-junit5</artifactId>
-            <version>${allure-junit5.version}</version>
-            <scope>compile</scope>
+            <artifactId>allure-cucumber7-jvm</artifactId>
+            <version>${allure-cucumber7-jvm.version}</version>
         </dependency>
 
         <!-- https://mvnrepository.com/artifact/org.aspectj/aspectjweaver -->
@@ -75,7 +98,7 @@
                 <version>${maven-surefire-plugin.version}</version>
                 <configuration>
                     <testFailureIgnore>true</testFailureIgnore>
-<!--                    <includes>**/TestRunner.java</includes>-->
+                    <includes>**/CucumberRunner.java</includes>
                     <argLine>
                         -Xmx1024m
                         -Dfile.encoding=${encoding.type}

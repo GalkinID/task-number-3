@@ -1,13 +1,12 @@
 package org.ibs.ui.base;
 
-import io.qameta.allure.Step;
 import org.ibs.utils.PropManager;
-import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeAll;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.support.FindBy;
+import org.openqa.selenium.support.PageFactory;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
@@ -22,8 +21,44 @@ public class BaseTests {
     protected static WebDriverWait wait;
     protected static PropManager propManager = new PropManager();
 
-    @BeforeAll
-    public static void initDriver() {
+    //---- элементы основной страницы
+    @FindBy(xpath = "//button[@data-target='#editModal']")
+    private WebElement button;
+    @FindBy(xpath = "//td[1]")
+    private List<WebElement> productList;
+    @FindBy(xpath = "//td[2]")
+    private List<WebElement> typeList;
+    @FindBy(xpath = "//td[3]")
+    private List<WebElement> exotictList;
+
+    //---- элементы для проверки модального окна
+    @FindBy(xpath = "//h5[@id='editModalLabel']")
+    private WebElement titleModuleAddProduct;
+    @FindBy(xpath = "//label[@for='name']")
+    private WebElement titleModuleName;
+    @FindBy(xpath = "//label[@for='type']")
+    private WebElement titleModuleType;
+    @FindBy(xpath = "//label[@for='exotic']")
+    private WebElement titleModuleExotic;
+    @FindBy(xpath = "//button[@id='save']")
+    private WebElement buttonSave;
+
+    //---- элементы для ввода данных в модальное окно
+    @FindBy(xpath = "//input[@class='form-control']")
+    private WebElement input;
+    @FindBy(xpath = "//select[@id='type']")
+    private WebElement type;
+    @FindBy(xpath = "//option[@value='VEGETABLE']")
+    private WebElement vegetable;
+    @FindBy(xpath = "//input[@id='exotic']")
+    private WebElement checkBox;
+    @FindBy(xpath = "//tbody/tr")
+    private WebElement firstElement;
+    @FindBy(xpath = "//th[@scope='row']")
+    private List<WebElement> number;
+
+
+    public void initDriver() {
         System.setProperty("webdriver.chrome.driver", "src/test/resources/chromedriver.exe");
         driver = new ChromeDriver();
         wait = new WebDriverWait(driver, Duration.ofSeconds(10L));
@@ -31,27 +66,25 @@ public class BaseTests {
         driver.manage().timeouts().implicitlyWait(15, TimeUnit.SECONDS);
         driver.manage().timeouts().pageLoadTimeout(10, TimeUnit.SECONDS);
 
+        PageFactory.initElements(driver, this);
         driver.get(propManager.getProperty(BASE_URL));
+
     }
 
-    @AfterAll
-    public static void quitDriver() {
+    public void quitDriver() {
         driver.quit();
     }
 
-    protected static void waittingThread(int seconds) {
+    public void waittingThread(int seconds) {
         try {
-            Thread.sleep(seconds*1000);
+            Thread.sleep(seconds * 1000);
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }
     }
+
     //--------------методы
-    @Step("проверки заполненности таблицы")
-    protected void checkTableIsNotEmpty(List<WebElement> number,
-                                        List<WebElement> productList,
-                                        List<WebElement> typeList,
-                                        List<WebElement> exotictList) {
+    public void checkTableIsNotEmpty() {
         for (int i = 0; i < number.size(); i++) {
             Assertions.assertTrue(number.get(i).getText().matches("[0-9]+"));
             Assertions.assertTrue(productList.get(i).getText().matches("[а-яА-Яa-zA-Z]+"));
@@ -60,53 +93,81 @@ public class BaseTests {
         }
     }
 
-    @Step("проверка отображения кнопки")
-    protected void checkElementIsDisplayed(WebElement element) {
-        Assertions.assertTrue(element.isDisplayed(), "Элемент не найден");
+    public void checkButtonSaveIsDisplayed() {
+        Assertions.assertTrue(buttonSave.isDisplayed(), "Элемент не найден");
+    }
+    public void checkFirstElementIsDisplayed() {
+        Assertions.assertTrue(firstElement.isDisplayed(), "Элемент не найден");
+    }
+    public void checkButtonAdd() {
+        Assertions.assertTrue(button.isDisplayed(), "Элемент не найден");
     }
 
-    @Step("проверка отображения кнопки и нажатие")
-    protected void checkIsActiveAndClick(WebElement element) {
-        Assertions.assertTrue(element.isDisplayed());
-        element.click();
+    public void checkIsActiveAndClick() {
+        Assertions.assertTrue(button.isDisplayed());
+        button.click();
+    }
+    public void clickButtonSave() {
+        buttonSave.click();
     }
 
-    @Step("Проверка заголовка")
-    protected void checkTitleModalWindow(WebElement element, String expectedText) {
-        Assertions.assertEquals(expectedText , element.getText(), String.format("Элемент %s не найден", expectedText));
+    public void checkTitleModalWindow(String title, String name, String type, String exotic) {
+        Assertions.assertAll(
+                () -> Assertions.assertEquals(title, titleModuleAddProduct.getText(), String.format("Элемент %s не найден", title)),
+                () -> Assertions.assertEquals(name, titleModuleName.getText(), String.format("Элемент %s не найден", name)),
+                () -> Assertions.assertEquals(type, titleModuleType.getText(), String.format("Элемент %s не найден", type)),
+                () -> Assertions.assertEquals(exotic, titleModuleExotic.getText(), String.format("Элемент %s не найден", exotic))
+        );
     }
 
-    @Step("Ввод в поле")
-    protected void fillFeid(WebElement element, String expectedText) {
-        element.sendKeys(expectedText);
-        Assertions.assertEquals(expectedText, element.getAttribute("value"), "Элемент не соотвествует введенному значению");
+
+    public void fillFeid(String expectedText) {
+        input.sendKeys(expectedText);
+        Assertions.assertEquals(expectedText, input.getAttribute("value"), "Элемент не соотвествует введенному значению");
     }
 
 
-    @Step("Выбор типа из выпадающего списка")
-    protected void choiceType(WebElement dropDown, WebElement option, String expectedText) {
-        dropDown.click();
-        option.click();
-        Assertions.assertEquals(expectedText, dropDown.getAttribute("value"),
+    public void choiceType(String expectedText) {
+        type.click();
+        vegetable.click();
+        Assertions.assertEquals(expectedText, type.getAttribute("value"),
                 "Элемент не соотвествует введенному значению");
     }
 
-    @Step("Установка значения чекбокса")
-    protected void choiceCheckbox(WebElement element, String exotic) {
-        if(exotic.equals("true")) {
-            element.click();
-            Assertions.assertTrue(Boolean.parseBoolean(element.getAttribute("checked")),
+    public void choiceCheckbox(String exotic) {
+        if (exotic.equals("true")) {
+            checkBox.click();
+            Assertions.assertTrue(Boolean.parseBoolean(checkBox.getAttribute("checked")),
                     "Элемент не соотвествует введенному значению");
         } else {
-            Assertions.assertFalse(Boolean.parseBoolean(element.getAttribute("checked")),
+            Assertions.assertFalse(Boolean.parseBoolean(checkBox.getAttribute("checked")),
                     "Элемент не соотвествует введенному значению");
         }
     }
 
-    @Step("Проверка добавленого поля - в таблицу")
-    protected void checkProductInTable(List<WebElement> elements, String expectedText) {
-        for(WebElement element : elements) {
-            if(!(element.getText().equals(expectedText))) {
+    public void checkProductForName(String expectedText) {
+        for (WebElement element : productList) {
+            if (!(element.getText().equals(expectedText))) {
+            } else {
+                Assertions.assertEquals(element.getText(), expectedText);
+                return;
+            }
+        }
+        Assertions.fail("Элемент не найден");
+    }
+    public void checkProductForType(String expectedText) {
+        for (WebElement element : typeList) {
+            if (!(element.getText().equals(expectedText))) {
+            } else {
+                Assertions.assertEquals(element.getText(), expectedText);
+                return;
+            }
+        }
+        Assertions.fail("Элемент не найден");
+    }
+    public void checkProductForExotic(String expectedText) {
+        for (WebElement element : exotictList) {
+            if (!(element.getText().equals(expectedText))) {
             } else {
                 Assertions.assertEquals(element.getText(), expectedText);
                 return;
@@ -115,8 +176,7 @@ public class BaseTests {
         Assertions.fail("Элемент не найден");
     }
 
-    @Step("ожидание пока элемент - не будет виден")
-    protected static WebElement waitting(WebElement element) {
-        return wait.until(ExpectedConditions.visibilityOf(element));
+    public WebElement waitModal() {
+        return wait.until(ExpectedConditions.visibilityOf(titleModuleAddProduct));
     }
 }
