@@ -2,6 +2,7 @@ package org.ibs.db.base;
 
 import io.qameta.allure.Step;
 import org.h2.jdbcx.JdbcDataSource;
+import org.ibs.utils.Product;
 import org.ibs.utils.PropManager;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Assertions;
@@ -110,7 +111,7 @@ public class BaseTestsDataBase {
                 for (Product product : products) {
                     if (product.getName().equals(name) &&
                             product.getType().equals(type) &&
-                            product.getIsExotic().equals(exotic)) {
+                            product.getExotic().equals(exotic)) {
                         boo = true;
                     }
                 }
