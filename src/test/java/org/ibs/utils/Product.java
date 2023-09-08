@@ -27,4 +27,13 @@ public class Product<T> {
     public T getExotic() {
         return exotic;
     }
+
+    @Override
+    public String toString() {
+        return "Product{" +
+                "name='" + name + '\'' +
+                ", type='" + type + '\'' +
+                ", exotic=" + exotic +
+                '}';
+    }
 }

@@ -15,8 +15,16 @@ public class CheckProductTableAPITest extends BaseApiTests {
     @Tag("@1")
     @DisplayName("Добавление нового товара")
     public void addProductTest() {
+        List<Product> products = sendGet();
+        checkNotRowInTable(products, "Перец", "VEGETABLE", "false");
+        checkNotInTableWithJDBC(SELECT, "Перец", "VEGETABLE", "0");
+
         sendPost(POST_BODY);
+
+        List<Product> afterPost = sendGet();
+        checkRowInTable(afterPost, "Перец", "VEGETABLE", "false");
         checkTableWithJDBC(SELECT, "Перец", "VEGETABLE", "0");
+
         deleteWithJDBC(DELETE, "Перец");
     }
 
@@ -26,6 +34,9 @@ public class CheckProductTableAPITest extends BaseApiTests {
     public void checkProductTableTest() {
         List<Product> products = sendGet();
         checkTableNotEmpty(products);
+
+        //эксперимент
+        checkRowInTable(products, "Апельсин", "FRUIT", "true");
     }
 
 

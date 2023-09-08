@@ -50,8 +50,45 @@ public class BaseApiTests {
 
     @Step("проверка добавления записи с параметрами,* в базу данных с помощью запроса")
     protected void checkTableWithJDBC(String sql, String name, String type, String exotic) {
-        List<Product> products = new ArrayList<>();
+        List<Product> products = getProductsFromJDBC(sql);
+        checkRowInTable(products, name, type, exotic);
+    }
+
+    @Step("проверка отсуствия строки, через базу данных с помощью запроса")
+    protected void checkNotInTableWithJDBC(String sql, String name, String type, String exotic) {
+        List<Product> products = getProductsFromJDBC(sql);
+        checkNotRowInTable(products, name, type, exotic);
+    }
+
+    @Step("Проверка присутствия строки в таблице")
+    protected void checkRowInTable(List<Product> products, String name, String type, String exotic) {
         boolean boo = false;
+        for (Product item : products) {
+            if (item.getName().equals(name)
+                    && item.getType().equals(type)
+                    && item.getExotic().toString().equals(exotic)) {
+                boo = true;
+            }
+        }
+        Assertions.assertTrue(boo, "элемент не найден");
+    }
+
+    @Step("Проверка отсуствия строки в таблице")
+    protected void checkNotRowInTable(List<Product> products, String name, String type, String exotic) {
+        boolean boo = false;
+        for (Product item : products) {
+            if (item.getName().equals(name)
+                    && item.getType().equals(type)
+                    && item.getExotic().toString().equals(exotic)) {
+                boo = true;
+            }
+        }
+        Assertions.assertFalse(boo, "элемент найден");
+    }
+
+    @Step("Получение списка продуктов через JDBC")
+    protected List<Product> getProductsFromJDBC(String sql) {
+        List<Product> products = new ArrayList<>();
         try (Connection connect = dataSource.getConnection()) {
             try (Statement statement = connect.createStatement()) {
                 try (ResultSet resultSet = statement.executeQuery(sql)) {
@@ -62,25 +99,18 @@ public class BaseApiTests {
                                 resultSet.getString("FOOD_EXOTIC")
                         ));
                     }
-                    for (Product item : products) {
-                        if (item.getName().equals(name)
-                                && item.getType().equals(type)
-                                && item.getExotic().equals(exotic)) {
-                            boo = true;
-                        }
-                    }
-                    Assertions.assertTrue(boo, "элемент не найден");
                 }
             }
         } catch (SQLException e) {
             throw new RuntimeException();
         }
+        return products;
     }
 
     @Step("удаление с помощью JDBC")
     protected void deleteWithJDBC(String sql, String name) {
-        try(Connection connection = dataSource.getConnection()) {
-            try(PreparedStatement statement = connection.prepareStatement(sql)) {
+        try (Connection connection = dataSource.getConnection()) {
+            try (PreparedStatement statement = connection.prepareStatement(sql)) {
                 statement.setString(1, name);
                 statement.executeUpdate();
             }
